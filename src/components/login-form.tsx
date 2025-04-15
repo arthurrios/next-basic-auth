@@ -22,6 +22,10 @@ import {
   FormLabel,
   FormMessage,
 } from './ui/form'
+import { useState } from 'react'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 const schema = z.object({
   email: z.string().email('Invalid email address'),
@@ -34,6 +38,9 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -42,8 +49,15 @@ export function LoginForm({
     },
   })
 
-  const handleSubmit = form.handleSubmit((formData) => {
-    console.log(formData)
+  const handleSubmit = form.handleSubmit(async (formData) => {
+    try {
+      setIsLoading(true)
+      await axios.post('/api/auth/sign-in', formData)
+      router.push('/')
+    } catch {
+      toast.error('Invalid credentials')
+      setIsLoading(false)
+    }
   })
 
   return (
@@ -103,8 +117,9 @@ export function LoginForm({
               />
 
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Login
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {!isLoading && 'Login'}
+                  {isLoading && 'Logging you in...'}
                 </Button>
                 <Button type="button" variant="outline" className="w-full">
                   Login with Google

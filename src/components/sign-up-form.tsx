@@ -22,6 +22,10 @@ import {
   FormMessage,
   Form,
 } from './ui/form'
+import axios from 'axios'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 const schema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -36,6 +40,9 @@ export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -46,8 +53,19 @@ export function SignUpForm({
     },
   })
 
-  const handleSubmit = form.handleSubmit((formData) => {
-    console.log(formData)
+  const handleSubmit = form.handleSubmit(async (formData) => {
+    try {
+      setIsLoading(true)
+      await axios.post('/api/auth/sign-up', formData)
+
+      router.push('/sign-in')
+      toast.success('Account created successfully!', {
+        description: 'Login to your account',
+      })
+    } catch {
+      toast.error('Error creating account')
+      setIsLoading(false)
+    }
   })
 
   return (
@@ -125,8 +143,9 @@ export function SignUpForm({
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Create an account
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {!isLoading && 'Create an account'}
+                {isLoading && 'Creating your account...'}
               </Button>
               <Button type="button" variant="outline" className="w-full">
                 Login with Google
