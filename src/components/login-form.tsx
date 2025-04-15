@@ -24,8 +24,8 @@ import {
 } from './ui/form'
 
 const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
 })
 
 type FormData = z.infer<typeof schema>
@@ -80,7 +80,15 @@ export function LoginForm({
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="password">Password</FormLabel>
+                    <div className="flex items-center">
+                      <FormLabel htmlFor="password">Password</FormLabel>
+                      <Link
+                        href="#"
+                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                      >
+                        Forgot your password?
+                      </Link>
+                    </div>
                     <FormControl>
                       <Input
                         autoComplete="current-password"

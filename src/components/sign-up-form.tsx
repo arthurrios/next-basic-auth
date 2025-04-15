@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -7,14 +9,47 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Form,
+} from './ui/form'
+
+const schema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
+})
+
+type FormData = z.infer<typeof schema>
 
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
+  const form = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    },
+  })
+
+  const handleSubmit = form.handleSubmit((formData) => {
+    console.log(formData)
+  })
+
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
@@ -25,47 +60,79 @@ export function SignUpForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
+          <Form {...form}>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               <div className="flex gap-5">
-                <div className="grid gap-3">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    type="text"
-                    placeholder="John"
-                    required
-                  />
-                </div>
-                <div className="grid gap-3">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" type="text" placeholder="Doe" required />
-                </div>
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="firstName">First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="lastName">Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
-
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
-                <Input id="password" type="password" required />
-              </div>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel htmlFor="email">Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        autoComplete="email"
+                        placeholder="m@jstack.com.br"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel htmlFor="password">Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        autoComplete="current-password"
+                        placeholder="********"
+                        type="password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <Button type="submit" className="w-full">
                 Create an account
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button type="button" variant="outline" className="w-full">
                 Login with Google
               </Button>
-            </div>
-          </form>
+            </form>
+          </Form>
 
           <div className="mt-4 text-center text-sm">
             Already have an account?{' '}
