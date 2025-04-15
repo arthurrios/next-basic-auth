@@ -1,0 +1,17 @@
+{
+  "extends": ["@arthurrios/biomejs-config/next"],
+  "linter": {
+    "rules": {
+      "style": {
+        "noUselessElse": "off",
+        "useSelfClosingElements": "off"
+      },
+      "complexity": {
+        "useArrowFunction": "off"
+      },
+      "correctness": {
+        "noUnusedImports": "warn"
+      }
+    }
+  }
+}
