@@ -1,14 +1,23 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import { SiteHeader } from '@/components/site-header'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
+import { AuthProvider } from '@/contexts/auth-context'
+import { auth } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const user = await auth()
+
+  if (!user) {
+    return redirect('/sign-in')
+  }
+
   return (
-    <div>
+    <AuthProvider user={user}>
       <SidebarProvider
         style={
           {
@@ -23,6 +32,6 @@ export default function AuthLayout({
           {children}
         </SidebarInset>
       </SidebarProvider>
-    </div>
+    </AuthProvider>
   )
 }
