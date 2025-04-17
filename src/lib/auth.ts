@@ -12,7 +12,6 @@ export async function getAccessToken() {
 }
 
 export async function verifyJwt(): Promise<null | string> {
-  const cookieStore = await cookies()
   const accessToken = await getAccessToken()
 
   if (!accessToken) {
