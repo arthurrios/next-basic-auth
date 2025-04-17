@@ -19,8 +19,6 @@ export async function verifyJwt(): Promise<null | string> {
   }
 
   try {
-    await new Promise((resolve) => setTimeout(resolve, 3000))
-
     const { sub: userId } = verify(accessToken, env.JWT_SECRET) as JwtPayload
 
     if (!userId) {

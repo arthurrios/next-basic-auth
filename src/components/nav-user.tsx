@@ -34,8 +34,8 @@ export function NavUser() {
   const { user } = useAuth()
 
   async function handleSignOut() {
-    router.push('/sign-in')
     await axios.post('/api/auth/sign-out')
+    router.push('/sign-in')
   }
 
   return (
